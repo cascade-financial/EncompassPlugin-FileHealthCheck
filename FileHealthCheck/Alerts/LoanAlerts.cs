@@ -13,7 +13,9 @@ namespace FileHealthCheck.Alerts
                 {
                     if (HealthCheck.InitialLeSentDate != null && HealthCheck.InitialLeSentDate.ToString() != "1/1/0001 12:00:00 AM")
                     {
-                        if (HealthCheck.LoanPurpose == "nocash-out refinance" && (string.IsNullOrEmpty(HealthCheck.LeDetailsSnapshot) || !HealthCheck.LeDetailsSnapshot.Contains("loan purpose: nocash-out refinance")))
+                        if (HealthCheck.LoanPurpose == "nocash-out refinance" && 
+                            (string.IsNullOrEmpty(HealthCheck.LeDetailsSnapshot) || !HealthCheck.LeDetailsSnapshot.Contains("loan purpose: nocash-out refinance")) && 
+                            HealthCheck.LoanTexasA4 == "y")
                         {
                             HealthCheck.HealthCheckMessage += "Confirm A4 Disclosure Sent";
                         }

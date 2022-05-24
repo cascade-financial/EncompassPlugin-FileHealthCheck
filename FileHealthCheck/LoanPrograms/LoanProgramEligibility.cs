@@ -109,8 +109,11 @@ namespace FileHealthCheck
                         else if (HealthCheck.SubjectPropertyState == "tx" && HealthCheck.LoanPurpose == "nocash-out refinance")
                         {
                             message += "y" == HealthCheck.LoanTexasA4 ? "" : $"Texax A4 [Disclosure.X1174] of '{HealthCheck.LoanTexasA4}' is not allowed for {HealthCheck.LoanProgram} \n";
-                            NoPrincipalReductions();
-                            NoCashToBorrower();
+                            if (HealthCheck.LoanTexasA4 == "y")
+                            {
+                                NoPrincipalReductions();
+                                NoCashToBorrower();
+                            }
                             if (message.Length > 0)
                             {
                                 HealthCheck.HealthCheckMessage += "Invalid Texas A4";

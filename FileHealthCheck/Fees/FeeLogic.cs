@@ -1,4 +1,5 @@
 ﻿using EllieMae.Encompass.Automation;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,30 +15,43 @@ namespace FileHealthCheck.Fees
         private decimal _lenderCredit = 0m;
         private decimal _totalFeesTXRefi = 0m;
         private decimal _feeCapPercent = 0m;
-        private decimal _DotLineOneFeeAmount = 0m;
-        private decimal _DotLineTwoFeeAmount = 0m;
-        private decimal _DotLineThreeFeeAmount = 0m;
-        private decimal _DotLineFourFeeAmount = 0m;
-        private decimal _CreditsEightZeroTwoAthroughDAmount = 0m;
+        private decimal _dotLineOneFeeAmount = 0m;
+        private decimal _dotLineTwoFeeAmount = 0m;
+        private decimal _dotLineThreeFeeAmount = 0m;
+        private decimal _dotLineFourFeeAmount = 0m;
+        private decimal _creditsEightZeroTwoAthroughDAmount = 0m;
+        private decimal _bonafidePointsAmount = 0m;
+        private decimal _originationDiscountPointsAmount = 0m;
+        private decimal _bonafidePointsAmountAdjustment = 0m;
 
-        private string _DotLineOneFeeName = "202";
-        private string _DotLineOneFeeAmountField = "141";
-        private string _DotLineTwoFeeName = "1091";
-        private string _DotLineTwoFeeAmountField = "1095";
-        private string _DotLineThreeFeeName = "1106";
-        private string _DotLineThreeFeeAmountField = "1115";
-        private string _DotLineFourFeeName = "1646";
-        private string _DotLineFourFeeAmountField = "1647";
-        private string _CreditsEightZeroTwoAthroughD = "NEWHUD.X1149";
+        private string _dotLineOneFeeName = "202";
+        private string _dotLineOneFeeAmountField = "141";
+        private string _dotLineTwoFeeName = "1091";
+        private string _dotLineTwoFeeAmountField = "1095";
+        private string _dotLineThreeFeeName = "1106";
+        private string _dotLineThreeFeeAmountField = "1115";
+        private string _dotLineFourFeeName = "1646";
+        private string _dotLineFourFeeAmountField = "1647";
+        private string _creditsEightZeroTwoAthroughD = "NEWHUD.X1149";
+        private string _originationDiscountPoints = "NEWHUD.X1151";
+        private string _bonafidePoints = "QM.X370";
 
         public void CalculateTxFeeCaps()
         {            
             PopulateFeeFields();
             PopulateApprovedFeeList();
             PolulateLoanFees();
+            BonafidePoints();
             TotalFeeAmount();
             TotalCreditAmount();
             ValidateFeeTolerance();
+        }
+
+        private void BonafidePoints()
+        {
+            decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_originationDiscountPoints].UnformattedValue, out _originationDiscountPointsAmount);
+            decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_bonafidePoints].UnformattedValue, out _bonafidePointsAmount);
+            _bonafidePointsAmountAdjustment = _originationDiscountPointsAmount - _bonafidePointsAmount;
         }
 
         private void PopulateFeeFields()
@@ -108,39 +122,40 @@ namespace FileHealthCheck.Fees
             {
                 if (item.FeeName == "Appraisal Fee" && item.FeeAmount > 165.00m)
                 {
-                    _totalFeesTXRefi = _totalFeesTXRefi + 165.00m;
+                    _totalFeesTXRefi += 165.00m;
                 }
                 else
                 {
-                    _totalFeesTXRefi = _totalFeesTXRefi + item.FeeAmount;
+                    _totalFeesTXRefi += item.FeeAmount;
                 }                
             }
+            _totalFeesTXRefi += _bonafidePointsAmountAdjustment;
         }
 
         private void TotalCreditAmount()
         {
-            if (EncompassApplication.CurrentLoan.Fields[_DotLineOneFeeName].FormattedValue == "Other Credit")
+            if (EncompassApplication.CurrentLoan.Fields[_dotLineOneFeeName].FormattedValue == "Other Credit")
             {
-                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_DotLineOneFeeAmountField].FormattedValue, out _DotLineOneFeeAmount);
+                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_dotLineOneFeeAmountField].FormattedValue, out _dotLineOneFeeAmount);
             }
-            if (EncompassApplication.CurrentLoan.Fields[_DotLineTwoFeeName].FormattedValue == "Other Credit")
+            if (EncompassApplication.CurrentLoan.Fields[_dotLineTwoFeeName].FormattedValue == "Other Credit")
             {
-                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_DotLineTwoFeeAmountField].FormattedValue, out _DotLineTwoFeeAmount);
+                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_dotLineTwoFeeAmountField].FormattedValue, out _dotLineTwoFeeAmount);
             }
-            if (EncompassApplication.CurrentLoan.Fields[_DotLineThreeFeeName].FormattedValue == "Other Credit")
+            if (EncompassApplication.CurrentLoan.Fields[_dotLineThreeFeeName].FormattedValue == "Other Credit")
             {
-                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_DotLineThreeFeeAmountField].FormattedValue, out _DotLineThreeFeeAmount);
+                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_dotLineThreeFeeAmountField].FormattedValue, out _dotLineThreeFeeAmount);
             }
-            if (EncompassApplication.CurrentLoan.Fields[_DotLineFourFeeName].FormattedValue == "Other Credit")
+            if (EncompassApplication.CurrentLoan.Fields[_dotLineFourFeeName].FormattedValue == "Other Credit")
             {
-                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_DotLineFourFeeAmountField].FormattedValue, out _DotLineFourFeeAmount);                
+                decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_dotLineFourFeeAmountField].FormattedValue, out _dotLineFourFeeAmount);                
             }
-            decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_CreditsEightZeroTwoAthroughD].FormattedValue, out _CreditsEightZeroTwoAthroughDAmount);
-            if ((_DotLineOneFeeAmount + _DotLineTwoFeeAmount + _DotLineThreeFeeAmount + _DotLineFourFeeAmount) > 0)
+            decimal.TryParse(EncompassApplication.CurrentLoan.Fields[_creditsEightZeroTwoAthroughD].FormattedValue, out _creditsEightZeroTwoAthroughDAmount);
+            if ((_dotLineOneFeeAmount + _dotLineTwoFeeAmount + _dotLineThreeFeeAmount + _dotLineFourFeeAmount) > 0)
             {
                 HealthCheck.HealthCheckMessage += "Other Credits";
             }
-            _lenderCredit = _DotLineOneFeeAmount + _DotLineTwoFeeAmount + _DotLineThreeFeeAmount + _DotLineFourFeeAmount + _CreditsEightZeroTwoAthroughDAmount;
+            _lenderCredit = _dotLineOneFeeAmount + _dotLineTwoFeeAmount + _dotLineThreeFeeAmount + _dotLineFourFeeAmount + _creditsEightZeroTwoAthroughDAmount;
         }
 
         private void ValidateFeeTolerance()
