@@ -165,7 +165,7 @@ namespace FileHealthCheck
 
         private void ValidateClosingDate()
         {
-            if (HealthCheck.RegZBusinessCalendar.AddBusinessDays(HealthCheck.RevisedCdSentDate,1,true) >= HealthCheck.ClosingDate)
+            if (HealthCheck.RegZBusinessCalendar.AddBusinessDays(HealthCheck.RevisedCdSentDate,1,true) > HealthCheck.ClosingDate)
             {
                 HealthCheck.HealthCheckMessage += "TX (a)(6) Invalid Closing Date";
             }
