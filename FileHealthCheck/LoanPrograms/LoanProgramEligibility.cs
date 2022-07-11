@@ -28,7 +28,7 @@ namespace FileHealthCheck
                         if (HealthCheck.SubjectPropertyState == "tx" && HealthCheck.LoanPurpose == "cash-out refinance")
                         {
                             feeLogic.CalculateTxFeeCaps();
-                            if (HealthCheck.RevisedCdSentDate != null && HealthCheck.RevisedCdSentDate.ToString() != "1/1/0001 12:00:00 AM")
+                            if (HealthCheck.RevisedCdReceivedDate != null && HealthCheck.RevisedCdReceivedDate.ToString() != "1/1/0001 12:00:00 AM")
                             {
                                 ValidateClosingDate();
                             }                           
@@ -165,7 +165,7 @@ namespace FileHealthCheck
 
         private void ValidateClosingDate()
         {
-            if (HealthCheck.RegZBusinessCalendar.AddBusinessDays(HealthCheck.RevisedCdSentDate,1,true) >= HealthCheck.ClosingDate)
+            if (HealthCheck.RegZBusinessCalendar.AddBusinessDays(HealthCheck.RevisedCdReceivedDate,1,true) > HealthCheck.ClosingDate)
             {
                 HealthCheck.HealthCheckMessage += "TX (a)(6) Invalid Closing Date";
             }

@@ -32,7 +32,7 @@ namespace FileHealthCheck
         public static string LeDetailsSnapshot { get; set; }
         public static int LoanTerm { get; set; }
         public static DateTime ClosingDate { get; set; }
-        public static DateTime RevisedCdSentDate { get; set; }
+        public static DateTime RevisedCdReceivedDate { get; set; }
         public static DateTime InitialLeSentDate { get; set; }
         public static BusinessCalendar RegZBusinessCalendar { get; set; }
 
@@ -42,7 +42,7 @@ namespace FileHealthCheck
         private decimal _cashToClose = 0m;
         private int _loanTerm = 0;
         private DateTime _closingDate;
-        private DateTime _revisedCdSentDate;
+        private DateTime _revisedCdReceivedDate;
         private DateTime _initalLeSentDate;
 
         public HealthCheck()
@@ -63,7 +63,7 @@ namespace FileHealthCheck
             decimal.TryParse(EncompassApplication.CurrentLoan.Fields["CD1.X69"].FormattedValue, out _cashToClose);
             int.TryParse(EncompassApplication.CurrentLoan.Fields["4"].FormattedValue, out _loanTerm);
             DateTime.TryParse(EncompassApplication.CurrentLoan.Fields["748"].FormattedValue, out _closingDate);
-            DateTime.TryParse(EncompassApplication.CurrentLoan.Fields["3979"].FormattedValue, out _revisedCdSentDate);
+            DateTime.TryParse(EncompassApplication.CurrentLoan.Fields["3980"].FormattedValue, out _revisedCdReceivedDate);
             DateTime.TryParse(EncompassApplication.CurrentLoan.Fields["3152"].FormattedValue, out _initalLeSentDate);
             LeDetailsSnapshot = EncompassApplication.CurrentLoan.Fields["CX.LE.LOAN.DETAILS.SNAPSHOT"].FormattedValue.ToLower();
             LoanProgram = EncompassApplication.CurrentLoan.Fields["1401"].FormattedValue.ToLower();
@@ -84,7 +84,7 @@ namespace FileHealthCheck
             TotalCashToClose = _cashToClose;
             LoanTerm = _loanTerm;
             ClosingDate = _closingDate;
-            RevisedCdSentDate = _revisedCdSentDate;
+            RevisedCdReceivedDate = _revisedCdReceivedDate;
             InitialLeSentDate = _initalLeSentDate;
         }
 
